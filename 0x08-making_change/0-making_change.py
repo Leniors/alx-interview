@@ -14,7 +14,7 @@ def makeChange(coins, total):
     dp = [float('inf')] * (total + 1)
     dp[0] = 0
     
-    # coins.sort()
+    coins.sort(reverse=true)
     
     for coin in coins:
         for x in range(coin, total + 1):
