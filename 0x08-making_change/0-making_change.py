@@ -25,8 +25,6 @@ def makeChange(coins, total):
     dp = [float('inf')] * (total + 1)
     dp[0] = 0
 
-    coins.sort()
-
     for coin in coins:
         for x in range(coin, total + 1):
             dp[x] = min(dp[x], dp[x - coin] + 1)
