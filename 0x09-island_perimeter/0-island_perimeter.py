@@ -1,13 +1,24 @@
 #!/usr/bin/python3
 """
-0-island_perimeter.py
+0-islan_perimeter
+
+A function that returns the perimeter of the island described in grid.
 """
 
+
 def island_perimeter(grid):
+    """island_perimeter
+    This method takes a list of integers lists and that represents a grid
+    of water and land. Which then calculates the perimeter of the land
+    and returns that number
+
+    Arguments:
+        grid (2D List): A list of integers where 0 represents water &
+                        1 represents land.
+
+    Return:
+        (int): The perimeter of the grid passed to the function.
     """
-    inspect the grid and get its perimeter
-    """
-    
     perimeter = 0
     
     for i in range(len(grid) - 1):
