@@ -8,6 +8,7 @@ A function that returns the perimeter of the island described in grid.
 
 def island_perimeter(grid):
     """island_perimeter
+
     This method takes a list of integers lists and that represents a grid
     of water and land. Which then calculates the perimeter of the land
     and returns that number
@@ -19,21 +20,27 @@ def island_perimeter(grid):
     Return:
         (int): The perimeter of the grid passed to the function.
     """
-    perimeter = 0
-    
-    for i in range(len(grid) - 1):
-        for j in range(len(grid[i]) - 1):
-            if grid[i][j] == 1:
-                add = 4
-            else:
+    total_perimeter = 0
+
+    for r, row in enumerate(grid):
+        for c, cell in enumerate(row):
+            if cell == 0:
                 continue
 
-            if grid[i][j] == 1 and j > 0 and grid[i][j - 1] == 1:
-                add -= 2
+            # Up
+            if r == 0 or grid[r-1][c] == 0:
+                total_perimeter += 1
 
-            if grid[i][j] == 1 and i > 0 and grid[i - 1][j] == 1:
-                add -= 2
+            # Down
+            if r == len(grid) - 1 or grid[r+1][c] == 0:
+                total_perimeter += 1
 
-            perimeter += add
+            # Left
+            if c == 0 or grid[r][c-1] == 0:
+                total_perimeter += 1
 
-    return perimeter
+            # Right
+            if c == len(row) - 1 or grid[r][c+1] == 0:
+                total_perimeter += 1
+
+    return total_perimeter
