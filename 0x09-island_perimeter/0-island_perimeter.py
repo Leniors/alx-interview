@@ -27,19 +27,15 @@ def island_perimeter(grid):
             if cell == 0:
                 continue
 
-            # Up
             if r == 0 or grid[r-1][c] == 0:
                 total_perimeter += 1
 
-            # Down
             if r == len(grid) - 1 or grid[r+1][c] == 0:
                 total_perimeter += 1
 
-            # Left
             if c == 0 or grid[r][c-1] == 0:
                 total_perimeter += 1
 
-            # Right
             if c == len(row) - 1 or grid[r][c+1] == 0:
                 total_perimeter += 1
 
