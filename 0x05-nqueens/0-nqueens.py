@@ -1,4 +1,5 @@
 #!/usr/bin/python3
+
 """
 Task 0. N queens
 
