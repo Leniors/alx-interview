@@ -1,51 +1,76 @@
 #!/usr/bin/python3
-"""
-Task 0. Log parsing
+'''script that reads stdin line by line and computes metrics'''
+import signal
+from sys import stdin, exit
+# from re import compile
 
-A script that reads stdin line by line and computes metrics.
-"""
-
-import sys
-
-
-def printStats(file_size, status):
-    """printStats
-
-    This function takes the total file size and the
-    statues that were called and prints them.
-
-    Arguments:
-        file_size (int): The total file size to be printed.
-        status (dict{int, int}): A dictionary of the statues that were called.
-    """
-    print("File size: {}".format(file_size))
-    for key, value in sorted(status.items()):
-        if value != 0:
-            print("{}: {}".format(key, value))
+STATUS = {
+        '200': 0,
+        '301': 0,
+        '400': 0,
+        '401': 0,
+        '403': 0,
+        '404': 0,
+        '405': 0,
+        '500': 0
+}
 
 
-total_file_size = 0
-count = 0
-possible_status = {200: 0, 301: 0, 400: 0, 401: 0,
-                   403: 0, 404: 0, 405: 0, 500: 0}
-try:
-    for line in sys.stdin:
-        args = line.split()
+def print_statistics(total):
+    '''print statistics'''
+    out = 'File size: {}\n'.format(total)
+    for k, v in sorted(STATUS.items()):
+        if v > 0:
+            out += '{}: {}\n'.format(k, v)
+    print(out, end='')
 
-        status_code = int(args[-2])
-        file_size = int(args[-1])
 
-        if status_code in possible_status:
-            possible_status[status_code] += 1
+def handler(signum, frame):
+    '''sginal handler'''
+    print_statistics(total)
+    exit(0)
 
-        total_file_size += file_size
-        count += 1
 
-        if count == 10:
-            printStats(total_file_size, possible_status)
-            count = 0
-    printStats(total_file_size, possible_status)
-except KeyboardInterrupt:
-    raise
-finally:
-    printStats(total_file_size, possible_status)
+# signal interrupt handler
+signal.signal(signal.SIGINT, handler)
+
+if __name__ == '__main__':
+    i = 0
+    total = 0
+
+    try:
+        for line in stdin:
+            # regex to match log line
+            # regex = compile(
+            #         r'^((25[0-5]|(2[0-4]|1\d|[1-9]|)\d)\.?\b){4}'
+            #         r' - \[\S+ \S+\] "GET /projects/260 HTTP/1.1" '
+            #         r'(\d{3}) (\d+)$'
+            #         )
+            # m = regex.match(line)
+
+            # if not m:
+            #     # there's no match skip line
+            #     continue
+            try:
+                toks = line.split()
+                status_code, size = toks[-2], int(toks[-1])
+                # _, __, ___, status_code, size = m.groups()
+
+                if status_code in STATUS:
+                    STATUS[status_code] += 1
+                total += size
+
+                # book keeping
+                i += 1
+
+                if i % 10 == 0:
+                    # print statistic
+                    print_statistics(total)
+
+            except Exception:
+                pass
+
+    except KeyboardInterrupt:
+        pass
+    finally:
+        print_statistics(total)
