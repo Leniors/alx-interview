@@ -17,46 +17,28 @@ def isWinner(x, nums):
     Return:
         (str): The name of the player who wins.
     """
-    if x < 1 or not nums:
+    if not nums or x < 1:  # if nums is empty or x is less than 1
         return None
+    n = max(nums)  # get the max value in nums list
+    sieve = [True for _ in range(max(n + 1, 2))]  # create a sieve of True val.
+    for i in range(2, int(pow(n, 0.5)) + 1):  # loop through the sieve
+        if not sieve[i]:  # if the value is False (not prime)
+            continue
+        for j in range(i*i, n + 1, i):  # loop through the sieve
+            sieve[j] = False  # set the value to False (not prime)
 
-    # Helper function to determine prime numbers up to the max n
-    def sieve_of_eratosthenes(max_n):
-        is_prime = [True] * (max_n + 1)
-        p = 2
-        while (p * p <= max_n):
-            if is_prime[p]:
-                for i in range(p * p, max_n + 1, p):
-                    is_prime[i] = False
-            p += 1
-        prime_numbers = [p for p in range(2, max_n + 1) if is_prime[p]]
-        return prime_numbers
+    sieve[0] = sieve[1] = False  # set 0 and 1 to False (not prime)
+    count = 0  # initialize count to 0 (Maria's score)
+    for i in range(len(sieve)):  # loop through the sieve and count the primes
+        if sieve[i]:  # if the value is True (prime)
+            count += 1
+        sieve[i] = count  # set the value to the count of primes
 
-    # Get all primes up to the largest number in nums
-    max_num = max(nums)
-    prime_numbers = sieve_of_eratosthenes(max_num)
-    
-    maria_wins = 0
-    ben_wins = 0
-
-    for n in nums:
-        primes_in_game = [p for p in prime_numbers if p <= n]
-        turn = 0  # 0 for Maria, 1 for Ben
-        
-        while primes_in_game:
-            prime = primes_in_game[0]
-            primes_in_game = [p for p in primes_in_game if p % prime != 0]
-
-            turn = 1 - turn
-        
-        if turn == 1:  # If turn is 1, it means Ben made the last valid move and Maria cannot move
-            maria_wins += 1
-        else:
-            ben_wins += 1
-
-    if maria_wins > ben_wins:
-        return "Maria"
-    elif ben_wins > maria_wins:
-        return "Ben"
-    else:
+    player1 = 0
+    for n in nums:  # loop through the nums list and count Maria's wins
+        player1 += sieve[n] % 2 == 1  # if Maria's score is odd, she wins
+    if player1 * 2 == len(nums):  # if Maria wins half the rounds
         return None
+    if player1 * 2 > len(nums):  # if Maria wins more than half the rounds
+        return "Maria"  # Maria wins
+    return "Ben"  # Ben wins
