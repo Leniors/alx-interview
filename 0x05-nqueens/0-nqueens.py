@@ -1,77 +1,72 @@
 #!/usr/bin/python3
-
-"""This module solves the N queens problem.
-
-The N queens puzzle is the challenge of placing N non-attacking queens,
-on an N×N chessboard.
-basically it depends on brute force search or generate and test approach.
-Time complexity: O(n! * n^2), but hence the dominant factor is n!, it reduces
-to O(n!)
-
-Attributes:
-    _len: length of the arguments to program.
-    num: integer value of 1st arg.
-"""
-
-from sys import argv
+""" Solves N queens puzzle """
+import sys
 
 
-class NQueen:
-    '''class definition for NQueen'''
+def print_sol(board):
+    """ Prints the board as a list of lists of indices """
+    solution = []
+    n = len(board)
+    for i in range(n):
+        for j in range(n):
+            if board[i][j] == 1:
+                solution.append([i, j])
+    print(solution)
 
-    def __init__(self, n):
-        '''Initialze the instance'''
-        if int(n) < 4:
-            print('N must be at least 4')
-            exit(1)
-        self.board = []
 
-    def is_valid(self, iter):
-        '''Validate solution.
+def is_valid(board, row, column):
+    """ Checks if the place of `row` and `column` is valid """
+    n = len(board)
 
-        Args:
-            iter: list of integers
-        '''
-        _len = len(iter)
-        for i in range(_len):
-            for j in range(i + 1, _len):
-                if iter[i] == iter[j] or abs(i - j) == abs(iter[i] - iter[j]):
-                    return False
+    for i in range(column):
+        if board[row][i] == 1:
+            return False
+
+    for i, j in zip(range(row, -1, -1), range(column, -1, -1)):
+        if board[i][j] == 1:
+            return False
+
+    for i, j in zip(range(row, n, 1), range(column, -1, -1)):
+        if board[i][j] == 1:
+            return False
+
+    return True
+
+
+def n_queens_util(board, column):
+    """ Utilizes backtracking to solve the N Queens problem """
+    n = len(board)
+    if column >= n:
+        print_sol(board)
         return True
 
-    def perm(self, input, prefix, res):
-        '''Find all permutations of given input
+    res = False
+    for i in range(n):
+        if is_valid(board, i, column):
+            board[i][column] = 1
+            res = n_queens_util(board, column + 1) or res
+            board[i][column] = 0
 
-        Args:
-            input(list[int]): list of integer
-            prefix(list[int]): list of candidates
-            res(list:list[int]): result to store all valid solutions
+    return res
 
-        '''
-        if len(input) == 0 and self.is_valid(prefix):
-            res.append(prefix)
-        for i, n in enumerate(input):
-            self.perm(input[:i] + input[i + 1:], prefix + [n], res)
 
-    def solution(self):
-        '''populte the board'''
-        self.perm(list(range(num)), [], self.board)
-        for solution in self.board:
-            print([[i, c] for i, c in enumerate(solution)])
+def n_queens(n):
+    """ Places N non-attacking queens on an NxN chessboard """
+    board = [[0 for _ in range(n)] for _ in range(n)]
+    n_queens_util(board, 0)
 
 
 if __name__ == '__main__':
-    _len = len(argv)
-
-    if _len != 2:
-        print('Usage: nqueens N')
+    if len(sys.argv) != 2:
+        print("Usage: nqueens N")
         exit(1)
 
-    for i in argv[1]:
-        if ord(i) < 48 or ord(i) > 57:
-            print('N must be a number')
-            exit(1)
+    if not sys.argv[1].isdigit():
+        print("N must be a number")
+        exit(1)
 
-    num = int(argv[1])
-    try_ = NQueen(num)
-    try_.solution()
+    if int(sys.argv[1]) < 4:
+        print("N must be at least 4")
+        exit(1)
+
+    n_queens(int(sys.argv[1]))
